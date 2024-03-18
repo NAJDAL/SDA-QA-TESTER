@@ -1,0 +1,30 @@
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+public class GoogleSearchExample {
+    public static void main(String[] args) {
+        // Set the path to your ChromeDriver executable
+        System.setProperty("webdriver.chrome.driver");
+        // Initialize the WebDriver instance
+        WebDriver driver = new ChromeDriver();
+        try {
+            // Navigate to Google
+            driver.get("https://www.google.com/");
+            // Locate the search bar
+            WebElement searchBar = driver.findElement(By.name("q"));
+            // Create Actions object
+            Actions actions = new Actions(driver);
+            // Click on the search bar
+            actions.click(searchBar);
+            // Type "Scroll Methods" into the search bar
+            actions.sendKeys("Scroll Methods");
+            // Perform the keyboard actions
+            actions.build().perform();
+            // Submit the search by hitting Enter
+            actions.sendKeys(Keys.ENTER).build().perform();
+        } finally {
+            // Close the browser window
+            driver.quit();
+        }
+    }
+}
