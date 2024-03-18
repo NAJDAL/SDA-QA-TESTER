@@ -1,0 +1,21 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+import time
+# Setup WebDriver
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service)
+# Go to Amazon
+driver.get("https://www.amazon.com")
+# Wait for the page to load
+time.sleep(5)
+# Take a full page screenshot
+driver.save_screenshot('full_page_screenshot.png')
+# Find a specific element. For example, the Amazon logo
+element = driver.find_element(By.ID, 'nav-logo-sprites')
+# Take a screenshot of the specific element
+element.screenshot('specific_element_screenshot.png')
+# Close the browser
+driver.quit()
+
