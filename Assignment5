@@ -1,0 +1,31 @@
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+public class FacebookCookiesExample {
+    public static void main(String[] args) {
+        // Set the path to your ChromeDriver executable
+        System.setProperty("webdriver.chrome.driver");
+        // Initialize the WebDriver instance
+        WebDriver driver = new ChromeDriver();
+        try {
+            // Navigate to the specified URL
+            driver.get("http://facebook.com");
+            // Get all the cookies
+            System.out.println("All Cookies:");
+            driver.manage().getCookies().forEach(cookie -> System.out.println(cookie.getName() + ": " + cookie.getValue()));
+            // Add a new cookie
+            Cookie newCookie = new Cookie("example_cookie", "example_value");
+            driver.manage().addCookie(newCookie);
+            System.out.println("Added Cookie: " + newCookie.getName());
+            // Delete a cookie by name
+            driver.manage().deleteCookieNamed("example_cookie");
+            System.out.println("Deleted Cookie: example_cookie");
+            // Delete all cookies
+            driver.manage().deleteAllCookies();
+            System.out.println("All Cookies Deleted");
+        } finally {
+            // Close the browser window
+            driver.quit();
+        }
+    }
+}
