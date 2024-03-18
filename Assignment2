@@ -1,0 +1,53 @@
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import java.util.Set;
+public class WindowHandlingExample {
+    public static void main(String[] args) {
+        // Set the path to your ChromeDriver executable
+        System.setProperty("webdriver.chrome.driver");
+        // Initialize the WebDriver instance
+        WebDriver driver = new ChromeDriver();
+        try {
+            // Navigate to the specified URL
+            driver.get("https://the-internet.herokuapp.com/windows");
+            // Verify the text "Opening a new window"
+            WebElement openingText = driver.findElement(By.xpath("//h3[text()='Opening a new window']"));
+            if (openingText.isDisplayed()) {
+                System.out.println("Text 'Opening a new window' is displayed.");
+            } else {
+                System.out.println("Text 'Opening a new window' is not displayed.");
+            }
+            // Verify the title of the page is "The Internet"
+            String pageTitle = driver.getTitle();
+            if (pageTitle.equals("The Internet")) {
+                System.out.println("Page title is 'The Internet'.");
+            } else {
+                System.out.println("Page title is not 'The Internet'.");
+            }
+            // Click on the "Click Here" button
+            WebElement clickHereButton = driver.findElement(By.cssSelector(".example a"));
+            clickHereButton.click();
+            // Get handles of all windows
+            Set<String> windowHandles = driver.getWindowHandles();
+            // Switch to the new window
+            for (String handle : windowHandles) {
+                driver.switchTo().window(handle);
+                if (driver.getTitle().equals("New Window")) {
+                    System.out.println("New window title is 'New Window'.");
+                    break;
+                }
+            }
+            // Switch back to the original window
+            driver.switchTo().window((String) windowHandles.toArray()[0]);
+            // Verify the title of the original window is "The Internet"
+            if (driver.getTitle().equals("The Internet")) {
+                System.out.println("Title of the original window is 'The Internet'.");
+            } else {
+                System.out.println("Title of the original window is not 'The Internet'.");
+            }
+        } finally {
+            // Close the browser window
+            driver.quit();
+        }
+    }
+}
