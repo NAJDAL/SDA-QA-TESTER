@@ -14,7 +14,7 @@ import org.openqa.selenium.interactions.Actions;
 public class JQueryInteraction {
     public static void main(String[] args) {
         // Set path to chromedriver executable
-        System.setProperty("webdriver.chrome.driver", "/path/to/chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\Users\najda\Downloads\chromedriver_win32\chromedriver.exe");
 
         // Create a new instance of the Chrome driver
         WebDriver driver = new ChromeDriver();
