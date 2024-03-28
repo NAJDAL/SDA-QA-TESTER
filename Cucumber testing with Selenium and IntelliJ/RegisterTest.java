@@ -6,7 +6,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 //Task01-FluentPOM
- 
+
+//FluentRegisterPage Class: This class represents the registration page and contains methods to interact with its elements.
             /*
             go to url : https://ecommerce-playground.lambdatest.io/index.php?route=account/register
             register account test with fluent page object approach
