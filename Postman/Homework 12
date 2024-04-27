@@ -1,0 +1,118 @@
+"Homework 12," you are asked to write an automation test that performs Create, Read, Update, and Delete (CRUD) operations on a pet using the Swagger Petstore API. This example will utilize a Plain Old Java Object (POJO) to represent the pet and use REST-assured for API interactions.
+
+Step 1: Define the Pet POJO
+First, define the Pet class that models the JSON structure used by the Petstore API.
+
+
+public class Pet {
+    private int id;
+    private String name;
+    private String status;
+
+    // Constructors
+    public Pet() { }
+
+    public Pet(int id, String name, String status) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+    }
+
+    // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}
+
+Step 2: Write the CRUD Test
+Next, you will implement the test in JUnit using REST-assured.
+
+
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+
+public class PetCRUDTest {
+
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
+    }
+
+    @Test
+    public void testCreateReadUpdateDeletePet() {
+        // Create a new pet
+        Pet myPet = new Pet(99123, "Rex", "available");
+        given()
+            .contentType(ContentType.JSON)
+            .body(myPet)
+        .when()
+            .post("/pet")
+        .then()
+            .statusCode(200);
+
+        // Read the created pet
+        given()
+            .pathParam("petId", myPet.getId())
+        .when()
+            .get("/pet/{petId}")
+        .then()
+            .statusCode(200)
+            .body("name", equalTo("Rex"));
+
+        // Update the pet's name
+        myPet.setName("Max");
+        given()
+            .contentType(ContentType.JSON)
+            .body(myPet)
+        .when()
+            .put("/pet")
+        .then()
+            .statusCode(200)
+            .body("name", equalTo("Max"));
+
+        // Delete the pet
+        given()
+            .pathParam("petId", myPet.getId())
+        .when()
+            .delete("/pet/{petId}")
+        .then()
+            .statusCode(200);
+    }
+}
+
+
+Explanation:
+Setup: Configure REST-assured's base URI.
+Create: Create a new Pet instance and send a POST request.
+Read: Verify the pet's details with a GET request.
+Update: Modify the Pet object and send a PUT request.
+Delete: Finally, delete the pet with a DELETE request.
+
+Execution:
+Ensure you have the necessary REST-assured and JUnit dependencies in your Java project to run this test.
