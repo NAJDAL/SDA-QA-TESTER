@@ -1,0 +1,47 @@
+Homework 11:
+/*
+    Given
+        https://automationexercise.com/api/productsList
+    When
+        User sends a GET request
+    Then
+        Assert that the number of "Women" user type is 12
+
+    Note: Print using JsonPath: response.jsonPath().prettyPrint();
+
+*/
+
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class ProductsListTest {
+
+    @Test
+    public void testNumberOfWomenProducts() {
+        // Set the base URI for REST-assured
+        RestAssured.baseURI = "https://automationexercise.com/api/productsList";
+
+        // Send GET request and capture the response
+        String response = given()
+                .when()
+                .get()
+                .then()
+                .assertThat()
+                .statusCode(200) // Check for HTTP 200 status code
+                .extract()
+                .asString(); // Extract the response as a string
+
+        // Use JsonPath to parse the response
+        JsonPath jsonPath = new JsonPath(response);
+        // Pretty print the entire JSON response
+        jsonPath.prettyPrint();
+
+        // Assert the number of "Women" user type is 12
+        int count = jsonPath.getInt("findAll { it.userType == 'Women' }.size()");
+        assert count == 12 : "The number of 'Women' user type should be 12 but was " + count;
+    }
+}
