@@ -1,70 +1,136 @@
-*// To accomplish the task, we will utilize an automation testing framework such as Selenium WebDriver, combined with programming languages Java. Below is a high-level outline of the steps required to create an automation test for the given scenario:
+"Homework 09," you will create an automation test that involves creating a user in the Swagger Petstore API using REST-assured. Below is a sample Java code demonstrating how to write this test.
 
-Setup Environment: Ensure that the necessary testing environment is set up, including the installation of Selenium WebDriver and any required dependencies.
-Access Swagger Documentation: Utilize the Swagger documentation provided at "https://petstore.swagger.io/" to understand the structure and endpoints of the API.
-Identify Endpoint: Identify the specific endpoint or API call required to create a 'user' within the Swagger documentation.
-Write Test Script: Using the chosen programming language, write a test script that interacts with the Swagger API documentation. This script should include steps to:
-Launch a web browser and navigate to the Swagger documentation URL.
-Locate the relevant endpoint for creating a user.
-Input necessary parameters for creating a user, such as username, email, and password.
-Trigger the API call to create the user.
-Verify the success or failure of the API call by checking the response status code or any returned messages.
-Execute Test: Execute the written test script to automate the process of creating a user using the Swagger API documentation.
-Validate Results: After executing the test, validate the results to ensure that the user creation process was successful. This can be done by checking for the presence of the created user within the system or by verifying any success messages returned by the API.
-Handle Errors: Implement error handling mechanisms within the test script to handle any unexpected issues or failures that may occur during the execution of the automation test.
+Step 1: Define the User POJO
+First, define a Java class to represent a User as per the Petstore API's requirements.
 
-Documentation and Reporting: Document the test script and its functionality, including any dependencies or prerequisites.
-Additionally, generate test reports detailing the results of the automation test for future reference.
-*//
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+
+
+public class User {
+    private long id;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+    private String phone;
+    private int userStatus;
+
+    // Constructors
+    public User() { }
+
+    public User(long id, String username, String firstName, String lastName, String email, String password, String phone, int userStatus) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.userStatus = userStatus;
+    }
+
+    // Getters and Setters
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public int getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(int userStatus) {
+        this.userStatus = userStatus;
+    }
+}
+
+Step 2: Write the Create User Test
+Next, implement the test to create a user using REST-assured.
+
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 
 public class CreateUserTest {
 
-    public static void main(String[] args) {
-        // Set the path to ChromeDriver executable
-        System.setProperty("webdriver.chrome.driver");
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
+    }
 
-        // Initialize ChromeDriver
-        WebDriver driver = new ChromeDriver();
+    @Test
+    public void testCreateUser() {
+        User newUser = new User(1, "johnDoe", "John", "Doe", "john.doe@example.com", "password123", "1234567890", 1);
 
-        // Navigate to Swagger documentation URL
-        driver.get("https://petstore.swagger.io/");
-
-        // Locate and click on "user" endpoint
-        WebElement userEndpoint = driver.findElement(By.xpath("//a[contains(text(),'user')]"));
-        userEndpoint.click();
-
-        // Locate and click on "POST /user" operation
-        WebElement postOperation = driver.findElement(By.xpath("//span[contains(text(),'POST /user')]"));
-        postOperation.click();
-
-        // Input parameters for user creation
-        WebElement usernameInput = driver.findElement(By.xpath("//span[contains(text(),'Username')]/following-sibling::input"));
-        usernameInput.sendKeys("testUser");
-
-        WebElement emailInput = driver.findElement(By.xpath("//span[contains(text(),'Email')]/following-sibling::input"));
-        emailInput.sendKeys("test@example.com");
-
-        WebElement passwordInput = driver.findElement(By.xpath("//span[contains(text(),'Password')]/following-sibling::input"));
-        passwordInput.sendKeys("testPassword");
-
-        // Locate and click on "Try it out" button
-        WebElement tryItOutButton = driver.findElement(By.xpath("//button[contains(text(),'Try it out')]"));
-        tryItOutButton.click();
-
-        // Wait for response and validate result
-        WebElement response = driver.findElement(By.xpath("//span[contains(text(),'Response')]"));
-        String responseText = response.getText();
-        if (responseText.contains("200")) {
-            System.out.println("User creation successful.");
-        } else {
-            System.out.println("User creation failed.");
-        }
-
-        // Close the browser
-        driver.quit();
+        given()
+            .contentType(ContentType.JSON)
+            .body(newUser)
+        .when()
+            .post("/user")
+        .then()
+            .statusCode(200)
+            .body("message", equalTo(String.valueOf(newUser.getId())));
     }
 }
+
+Explanation:
+Setup: Set the base URI to the Swagger Petstore.
+User Object: Create a User instance to represent the new user.
+Send Request: Use REST-assured to send a POST request with the user object as JSON.
+Assertions: Verify that the API returns a status code of 200 and check that the response message contains the user's ID.
