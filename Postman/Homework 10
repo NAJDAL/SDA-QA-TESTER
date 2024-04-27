@@ -1,0 +1,52 @@
+//Homework 10:
+//Using the https://petstore.swagger.io/ document, write an automation test that finds the number of "pets" with the status "available" and asserts that there are more than 100.
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class AvailablePetsTest {
+
+    public static void main(String[] args) {
+        // Set the path to ChromeDriver executable
+        System.setProperty("webdriver.chrome.driver");
+
+        // Initialize ChromeDriver
+        WebDriver driver = new ChromeDriver();
+
+        // Navigate to Swagger documentation URL
+        driver.get("https://petstore.swagger.io/");
+
+        // Locate and click on "pet" endpoint
+        WebElement petEndpoint = driver.findElement(By.xpath("//a[contains(text(),'pet')]"));
+        petEndpoint.click();
+
+        // Locate and click on "GET /pet/findByStatus" operation
+        WebElement findByStatusOperation = driver.findElement(By.xpath("//span[contains(text(),'GET /pet/findByStatus')]"));
+        findByStatusOperation.click();
+
+        // Input parameter for status "available"
+        WebElement statusInput = driver.findElement(By.xpath("//span[contains(text(),'Status')]/following-sibling::input"));
+        statusInput.sendKeys("available");
+
+        // Locate and click on "Try it out" button
+        WebElement tryItOutButton = driver.findElement(By.xpath("//button[contains(text(),'Try it out')]"));
+        tryItOutButton.click();
+
+        // Wait for response and retrieve the number of available pets
+        WebElement response = driver.findElement(By.xpath("//span[contains(text(),'Response')]"));
+        String responseText = response.getText();
+        int availablePetsCount = Integer.parseInt(responseText.split("\"status\":\"available\"").length - 1);
+
+        // Assert that there are more than 100 available pets
+        if (availablePetsCount > 100) {
+            System.out.println("Number of available pets is more than 100.");
+        } else {
+            System.out.println("Assertion failed: Number of available pets is not more than 100.");
+        }
+
+        // Close the browser
+        driver.quit();
+    }
+}
