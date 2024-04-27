@@ -1,52 +1,41 @@
-//Homework 10:
-//Using the https://petstore.swagger.io/ document, write an automation test that finds the number of "pets" with the status "available" and asserts that there are more than 100.
+"Homework 10," you need to write an automation test using REST-assured to find the number of pets with the status "available" at the Swagger Petstore API, and assert that there are more than 100 such pets. Here’s how you can accomplish this:
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+Step 1: Define the Test Class
+You'll use JUnit to manage the test execution and REST-assured for API interactions.
+
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 
 public class AvailablePetsTest {
 
-    public static void main(String[] args) {
-        // Set the path to ChromeDriver executable
-        System.setProperty("webdriver.chrome.driver");
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
+    }
 
-        // Initialize ChromeDriver
-        WebDriver driver = new ChromeDriver();
-
-        // Navigate to Swagger documentation URL
-        driver.get("https://petstore.swagger.io/");
-
-        // Locate and click on "pet" endpoint
-        WebElement petEndpoint = driver.findElement(By.xpath("//a[contains(text(),'pet')]"));
-        petEndpoint.click();
-
-        // Locate and click on "GET /pet/findByStatus" operation
-        WebElement findByStatusOperation = driver.findElement(By.xpath("//span[contains(text(),'GET /pet/findByStatus')]"));
-        findByStatusOperation.click();
-
-        // Input parameter for status "available"
-        WebElement statusInput = driver.findElement(By.xpath("//span[contains(text(),'Status')]/following-sibling::input"));
-        statusInput.sendKeys("available");
-
-        // Locate and click on "Try it out" button
-        WebElement tryItOutButton = driver.findElement(By.xpath("//button[contains(text(),'Try it out')]"));
-        tryItOutButton.click();
-
-        // Wait for response and retrieve the number of available pets
-        WebElement response = driver.findElement(By.xpath("//span[contains(text(),'Response')]"));
-        String responseText = response.getText();
-        int availablePetsCount = Integer.parseInt(responseText.split("\"status\":\"available\"").length - 1);
+    @Test
+    public void testAvailablePetsCount() {
+        Response response = given()
+            .queryParam("status", "available")
+        .when()
+            .get("/pet/findByStatus")
+        .then()
+            .statusCode(200)
+            .extract().response();
 
         // Assert that there are more than 100 available pets
-        if (availablePetsCount > 100) {
-            System.out.println("Number of available pets is more than 100.");
-        } else {
-            System.out.println("Assertion failed: Number of available pets is not more than 100.");
-        }
-
-        // Close the browser
-        driver.quit();
+        int numberOfAvailablePets = response.jsonPath().getList("").size();
+        assert numberOfAvailablePets > 100 : "Expected more than 100 available pets, but found " + numberOfAvailablePets;
     }
 }
+Explanation:
+Setup: Configure REST-assured's base URI to the Swagger Petstore.
+Query Available Pets: Send a GET request to /pet/findByStatus with a query parameter status set to "available".
+Status Code Check: Verify that the server responds with a 200 status code.
+Extract and Assert: Extract the response, count the number of pets in the list, and use an assertion to check that the count is greater than 100.
