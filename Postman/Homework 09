@@ -1,4 +1,4 @@
-*// To accomplish the task, we will utilize an automation testing framework such as Selenium WebDriver, combined with programming languages JavaScript. Below is a high-level outline of the steps required to create an automation test for the given scenario:
+*// To accomplish the task, we will utilize an automation testing framework such as Selenium WebDriver, combined with programming languages Java. Below is a high-level outline of the steps required to create an automation test for the given scenario:
 
 Setup Environment: Ensure that the necessary testing environment is set up, including the installation of Selenium WebDriver and any required dependencies.
 Access Swagger Documentation: Utilize the Swagger documentation provided at "https://petstore.swagger.io/" to understand the structure and endpoints of the API.
