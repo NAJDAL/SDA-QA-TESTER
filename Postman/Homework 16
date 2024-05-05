@@ -1,0 +1,70 @@
+//Homework 16:
+//Write an automation test that will add a 'contact' then read, update and delete the created contact then negative assert the deleted contact using the "https://documenter.getpostman.com/view/4012288/TzK2bEa8" document.
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.json.JSONObject;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class ContactAPITest {
+
+    @Test
+    public void testContactAPI() {
+        RestAssured.baseURI = "https://documenter.getpostman.com/view/4012288/TzK2bEa8";
+
+        // Add contact
+        JSONObject addParams = new JSONObject();
+        addParams.put("name", "Alice");
+        addParams.put("email", "alice@example.com");
+        addParams.put("phone", "1234567890");
+
+        Response responseAdd = given()
+                .header("Content-Type", "application/json")
+                .body(addParams.toString())
+                .post("/contacts");
+
+        responseAdd.then().statusCode(201);
+
+        String contactId = responseAdd.jsonPath().getString("id");
+
+        // Read contact
+        Response responseRead = given()
+                .get("/contacts/" + contactId);
+
+        responseRead.then().statusCode(200)
+                .body("name", equalTo("Alice"))
+                .body("email", equalTo("alice@example.com"))
+                .body("phone", equalTo("1234567890"));
+
+        // Update contact
+        JSONObject updateParams = new JSONObject();
+        updateParams.put("name", "Alice Smith");
+        updateParams.put("email", "alice.smith@example.com");
+        updateParams.put("phone", "0987654321");
+
+        Response responseUpdate = given()
+                .header("Content-Type", "application/json")
+                .body(updateParams.toString())
+                .put("/contacts/" + contactId);
+
+        responseUpdate.then().statusCode(200)
+                .body("name", equalTo("Alice Smith"))
+                .body("email", equalTo("alice.smith@example.com"))
+                .body("phone", equalTo("0987654321"));
+
+        // Delete contact
+        Response responseDelete = given()
+                .delete("/contacts/" + contactId);
+
+        responseDelete.then().statusCode(204);
+
+        // Negative assert the deleted contact
+        Response responseDeletedContact = given()
+                .get("/contacts/" + contactId);
+
+        responseDeletedContact.then().statusCode(404);
+    }
+}
