@@ -1,0 +1,60 @@
+#Homework 15:
+//Write an automation test that will create a 'user' then read, update and delete the created user using the "https://documenter.getpostman.com/view/4012288/TzK2bEa8" document.
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.json.JSONObject;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class UserAPITest {
+
+    @Test
+    public void testUserAPI() {
+        RestAssured.baseURI = "https://documenter.getpostman.com/view/4012288/TzK2bEa8";
+
+        // Create user
+        JSONObject requestParams = new JSONObject();
+        requestParams.put("name", "John Doe");
+        requestParams.put("job", "Engineer");
+
+        Response responseCreate = given()
+                .header("Content-Type", "application/json")
+                .body(requestParams.toString())
+                .post("/users");
+
+        responseCreate.then().statusCode(201);
+
+        String userId = responseCreate.jsonPath().getString("id");
+
+        // Read user
+        Response responseRead = given()
+                .get("/users/" + userId);
+
+        responseRead.then().statusCode(200)
+                .body("data.name", equalTo("John Doe"))
+                .body("data.job", equalTo("Engineer"));
+
+        // Update user
+        JSONObject updateParams = new JSONObject();
+        updateParams.put("name", "Jane Doe");
+        updateParams.put("job", "Senior Engineer");
+
+        Response responseUpdate = given()
+                .header("Content-Type", "application/json")
+                .body(updateParams.toString())
+                .put("/users/" + userId);
+
+        responseUpdate.then().statusCode(200)
+                .body("name", equalTo("Jane Doe"))
+                .body("job", equalTo("Senior Engineer"));
+
+        // Delete user
+        Response responseDelete = given()
+                .delete("/users/" + userId);
+
+        responseDelete.then().statusCode(204);
+    }
+}
